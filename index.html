@@ -1,1 +1,28 @@
-My name is Faris
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Summary</title>
+
+</head>
+<body>
+<h1>About Me</h1>
+<p id="profile"></p>
+
+<script>
+    // Define variables
+    const firstName = "Faris";
+    const lastName = 'Abshiru';
+    const yearsOfStudy = 3;
+    const goal = "To have software developer";
+
+    // Combine the variables into the profile message
+    const profile = `My name is Faris Abshiru, I am studying at SCC since three years my plan is to have a Software developer after completing my courses.`;
+
+// Output My profile to the <p> element
+    document.getElementById("profile").textContent = profile;
+</script>
+<script src="script.js"></script>
+</body>
+</html>
