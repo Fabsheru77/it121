@@ -2,18 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Pig Latin translator</title>
+    <title>Pig Latin Translator</title>
 </head>
 <body>
-
 <script>
-    phrase = prompt("Enter a phrase");
-    document.write("You entered - ", phrase);
-
     // Your pig-latin translation code here
+        phrase = prompt("Enter a phrase");
+    if (!phrase || phrase.trim() === "") {
+        document.write("<strong>Warning:</strong> User didn't enter anything. Refresh and try again.");
+    } else {
+        document.write("<p>You entered: " + phrase + "</p>");
+        function Vowel(char) {
+            const vowels = 'aeiou';
+            return vowels.includes(char.toLowerCase());
+        }
 
+        function translateToPigLatin(sentence) {
+            const words = sentence.split(' ');
+            const pigLatinWords = words.map(word => {
+                if (Vowel(word[0])) {
+                    return word + 'way';
+                } else {
+                    let consonantCluster = '';
+                    let char = 0;
+
+                    while (char < word.length && !Vowel(word[char])) {
+                        consonantCluster += word[char];
+                        char++;
+                    }
+
+                    return word.slice(char) + consonantCluster + 'ay';
+                }
+            });
+
+            return pigLatinWords.join(' ');
+        }
+
+        const pigLatinPhrase = translateToPigLatin(phrase);
+        document.write("<p>In Pig Latin: " + pigLatinPhrase + "</p>");
+    }
 </script>
-
-<script src="pigLatin.js"></script>
 </body>
 </html>
