@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Grades</title>
+</head>
+<body>
+
+<script>
+    const grades = "jim|25, sue|32, mary|34, ann|22, ted|28, frank|15, lisa|19, mike|30, ahn|26, vishaya|27";
+
+    // Split the grades string into individual student entries
+    const studentEntries = grades.split(", ");
+
+    // Initialize variables for calculations
+    let totalScore = 0;
+    let highestScore = -Infinity;
+    let lowestScore = Infinity;
+    const students = [];
+
+    // Process each entry
+    studentEntries.forEach(entry => {
+        const [name, score] = entry.split("|"); // Split name and score
+        const numericScore = parseInt(score, 10);
+
+        // Update calculations
+        totalScore += numericScore;
+        highestScore = Math.max(highestScore, numericScore);
+        lowestScore = Math.min(lowestScore, numericScore);
+
+        // Capitalize the first letter of the name and store
+        const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+        students.push({ name: capitalizedName, score: numericScore });
+    });
+
+    // Calculate average
+    const averageScore = (totalScore / students.length).toFixed(2);
+
+    // Sort students alphabetically by name
+    students.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Display students and summary
+    document.body.innerHTML += `<h1>Student Grades (Name and Score)</h1>`;
+    students.forEach(student => {
+        document.body.innerHTML += `<p>${student.name} - ${student.score}</p>`;
+    });
+    document.body.innerHTML += `
+        <h2>Summary of the grades</h2>
+        <p>Total Students: ${students.length}</p>
+        <p>Lowest Score: ${lowestScore}</p>
+        <p>Highest Score: ${highestScore}</p>
+        <p>Average Score: ${averageScore}</p>`;
+</script>
+
+</body>
+</html>
