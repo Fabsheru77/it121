@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script
+            src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+
+<h1>Robo Dealer</h1>
+
+<button onclick="dealHand();">Playing Cards</button>
+
+<hr>
+<div id="card_hand"></div>
+
+<script>
+    class Card {
+        constructor(value, suit) {
+            this.value = value;
+            this.suit = suit;
+        }
+
+        getName() {
+            const faceCards = { 11: "Jack", 12: "Queen", 13: "King", 14: "Ace" };
+            return faceCards[this.value] || this.value;
+        }
+    }
+
+    const suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+    const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+
+    // Function to generate a fresh deck
+    const createDeck = () => {
+        return suits.flatMap(suit => values.map(value => new Card(value, suit)));
+    };
+
+    let deck = createDeck();
+
+    const dealHand = () => {
+        if (deck.length < 5) {
+            alert("No enough cards left in the deck. Reorder by pressing OK button or refresh the URL!");
+            deck = createDeck();
+        }
+
+        let hand = [];
+        for (let i = 0; i < 5; i++) {
+            let randomIndex = Math.floor(Math.random() * deck.length);
+            hand.push(deck.splice(randomIndex, 1)[0]); // Remove and add to hand
+        }
+
+        let handDisplay = hand.map(card => `- ${card.getName()} of ${card.suit}`).join("<br>");
+        $("#card_hand").html(handDisplay);
+    };
+</script>
+
+</body>
+</html>
