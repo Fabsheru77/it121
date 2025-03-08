@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Drawing with JavaScript and the Canvas Object</title>
+    <style>
+        body {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          background-color: #f0f0f0;
+          font-family: Arial, sans-serif;
+        }
+        canvas {
+          border: 2px solid #000;
+          background-color: #fff;
+        }
+        #fps {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          font-size: 16px;
+          color: #000;
+        }
+    </style>
+</head>
+<body>
+<canvas id="myCanvas" width="500" height="500"></canvas>
+<div id="fps">FPS: 0</div>
+
+<script>
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+    const fpsCounter = document.getElementById('fps');
+
+    let angle = 0; // For rotation
+    let scale = 1; // For scaling
+    let scaleDirection = 1; // Direction of scaling
+    let mouseX = 0, mouseY = 0; // Track mouse position
+    let ripples = []; // Store ripple effects
+    let lastTime = 0; // For FPS calculation
+    let frameCount = 0; // For FPS calculation
+
+    // Track mouse movement
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    });
+
+    // Track mouse clicks for ripple effects
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      ripples.push({ x, y, radius: 0, alpha: 1 });
+    });
+
+    function draw() {
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw a gradient background
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, '#ff7e5f');
+      gradient.addColorStop(1, '#feb47b');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw a line (interactive)
+      ctx.beginPath();
+      ctx.moveTo(50, 50);
+      ctx.lineTo(mouseX, mouseY); // Line follows mouse
+      ctx.strokeStyle = 'blue';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Draw a rectangle with a shadow
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetX = 5;
+      ctx.shadowOffsetY = 5;
+      ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
+      ctx.fillRect(50, 100, 150, 100);
+      ctx.shadowColor = 'transparent'; // Reset shadow
+
+      // Draw an arc (circle) with a gradient fill
+      const gradientCircle = ctx.createRadialGradient(300, 100, 10, 300, 100, 50);
+      gradientCircle.addColorStop(0, 'yellow');
+      gradientCircle.addColorStop(1, 'orange');
+      ctx.beginPath();
+      ctx.arc(300, 100, 50, 0, Math.PI * 2);
+      ctx.fillStyle = gradientCircle;
+      ctx.fill();
+      ctx.strokeStyle = 'darkorange';
+      ctx.stroke();
+
+      // Pulsating circle at the center
+      ctx.beginPath();
+      ctx.arc(250, 250, 50 * Math.abs(Math.sin(angle)), 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 150, 255, 0.5)';
+      ctx.fill();
+
+      // Animated rotating and scaling star
+      ctx.save();
+      ctx.translate(250, 250); // Move origin to the center
+      ctx.rotate(angle); // Rotate
+      ctx.scale(scale, scale); // Scale
+      drawStar(0, 0, 50, 100, 5); // Draw a star
+      ctx.restore();
+
+      // Draw ripples (click effects)
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const ripple = ripples[i];
+        ctx.beginPath();
+        ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0, 0, 255, ${ripple.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ripple.radius += 2;
+        ripple.alpha -= 0.02;
+        if (ripple.alpha <= 0) {
+          ripples.splice(i, 1); // Remove expired ripples
+        }
+      }
+
+      // Draw rotating text
+      ctx.save();
+      ctx.translate(250, 250);
+      ctx.rotate(-angle);
+      ctx.font = '20px Arial';
+      ctx.fillStyle = 'black';
+      ctx.textAlign = 'center';
+      ctx.fillText('Draw Me Canvas Picture!', 0, 0);
+      ctx.restore();
+
+      // Update angle for rotation
+      angle += 0.02;
+
+      // Update scale for scaling animation
+      scale += 0.01 * scaleDirection;
+      if (scale > 1.5 || scale < 0.5) {
+        scaleDirection *= -1; // Reverse direction
+      }
+
+      // Calculate FPS
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        fpsCounter.textContent = `FPS: ${frameCount}`;
+        frameCount = 0;
+        lastTime = now;
+      }
+
+      // Request the next frame
+      requestAnimationFrame(draw);
+    }
+
+    // Helper function to draw a star
+    function drawStar(cx, cy, innerRadius, outerRadius, points) {
+      ctx.beginPath();
+      const step = (Math.PI * 2) / (points * 2);
+      for (let i = 0; i < Math.PI * 2; i += step) {
+        const x = cx + Math.cos(i) * outerRadius;
+        const y = cy + Math.sin(i) * outerRadius;
+        ctx.lineTo(x, y);
+        i += step;
+        const x2 = cx + Math.cos(i) * innerRadius;
+        const y2 = cy + Math.sin(i) * innerRadius;
+        ctx.lineTo(x2, y2);
+      }
+      ctx.closePath();
+      ctx.fillStyle = `hsl(${angle * 50}, 100%, 50%)`; // Dynamic color
+      ctx.fill();
+      ctx.strokeStyle = 'darkviolet';
+      ctx.stroke();
+    }
+
+    // Start the animation
+    draw();
+</script>
+</body>
+</html>
