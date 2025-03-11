@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Drawing with JavaScript and the Canvas Object</title>
+</head>
+<body>
+<h1>Draw me a picture</h1>
+<canvas id="myCanvas"></canvas>
+
+<script>
+    // Select the canvas and set up context
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 500;
+    canvas.height = 400;
+
+    // Ball properties
+    let ballX = 50;
+    let ballY = 50;
+    let ballDX = 2;
+    let ballDY = 2;
+    let ballRadius = 15;
+    let angle = 0;
+
+    function drawScene() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Sky background
+        ctx.fillStyle = "lightblue";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Sun
+        ctx.fillStyle = "yellow";
+        ctx.beginPath();
+        ctx.arc(450, 50, 30, 0, Math.PI * 2);
+        ctx.fill();
+
+        // House base
+        ctx.fillStyle = "tan";
+        ctx.fillRect(150, 200, 200, 150);
+
+        // Roof
+        ctx.fillStyle = "brown";
+        ctx.beginPath();
+        ctx.moveTo(150, 200);
+        ctx.lineTo(250, 120);
+        ctx.lineTo(350, 200);
+        ctx.closePath();
+        ctx.fill();
+
+        // Door
+        ctx.fillStyle = "darkred";
+        ctx.fillRect(230, 280, 40, 70);
+
+        // Windows
+        ctx.fillStyle = "lightyellow";
+        ctx.fillRect(170, 220, 40, 40);
+        ctx.fillRect(290, 220, 40, 40);
+
+        // Rotating Windmill
+        ctx.save();
+        ctx.translate(400, 300);
+        ctx.rotate(angle);
+        ctx.fillStyle = "gray";
+        ctx.fillRect(-5, -30, 10, 60); // Windmill pole
+
+        ctx.fillStyle = "black";
+        for (let i = 0; i < 4; i++) {
+            ctx.rotate(Math.PI / 2);
+            ctx.fillRect(0, -5, 30, 10);
+        }
+        ctx.restore();
+
+        // Ball (animation element)
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function animate() {
+        ballX += ballDX;
+        ballY += ballDY;
+        angle += 0.05;
+
+        // Bounce off walls
+        if (ballX + ballRadius > canvas.width || ballX - ballRadius < 0) {
+            ballDX = -ballDX;
+        }
+        if (ballY + ballRadius > canvas.height || ballY - ballRadius < 0) {
+            ballDY = -ballDY;
+        }
+
+        drawScene();
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+</script>
+</body>
+</html>
